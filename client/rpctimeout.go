@@ -31,10 +31,12 @@ import (
 	"github.com/cloudwego/kitex/pkg/rpctimeout"
 )
 
+// note 用来减少 超时的goroutine 的开销
 // workerPool is used to reduce the timeout goroutine overhead.
 var workerPool *wpool.Pool
 
 func init() {
+	// note "如果超时组件不被允许，这里不会产生任何开销"
 	// if timeout middleware is not enabled, it will not cause any extra overhead
 	workerPool = wpool.New(
 		128,

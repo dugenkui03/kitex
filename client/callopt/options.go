@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// note 请求配置
 // Package callopt contains options that control the behavior of client on request level.
 package callopt
 

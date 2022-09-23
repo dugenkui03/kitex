@@ -35,6 +35,7 @@ type MutableEndpointInfo interface {
 	ResetFromBasicInfo(bi *EndpointBasicInfo)
 }
 
+// note 可修改的rpc配置
 // MutableRPCConfig is used to change the information in the RPCConfig.
 type MutableRPCConfig interface {
 	SetRPCTimeout(to time.Duration) error

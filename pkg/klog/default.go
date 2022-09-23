@@ -24,6 +24,7 @@ import (
 	"os"
 )
 
+// note 首先设置一个默认值
 var logger FullLogger = &defaultLogger{
 	level:  LevelInfo,
 	stdlog: log.New(os.Stderr, "", log.LstdFlags|log.Lshortfile|log.Lmicroseconds),
@@ -46,6 +47,7 @@ func DefaultLogger() FullLogger {
 	return logger
 }
 
+// todo 应该只能调用一次
 // SetLogger sets the default logger.
 // Note that this method is not concurrent-safe and must not be called
 // after the use of DefaultLogger and global functions in this package.

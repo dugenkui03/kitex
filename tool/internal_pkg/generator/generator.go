@@ -27,6 +27,7 @@ import (
 	"github.com/cloudwego/kitex/tool/internal_pkg/util"
 )
 
+// 常量，不可修改
 // Constants .
 const (
 	KitexGenPath = "kitex_gen"
@@ -43,6 +44,7 @@ const (
 )
 
 var (
+	// note 包倒入路径
 	kitexImportPath = "github.com/cloudwego/kitex"
 
 	globalMiddlewares  []Middleware
@@ -213,6 +215,7 @@ func NewGenerator(config *Config, middlewares []Middleware) Generator {
 	return g
 }
 
+// note 命名函数
 // Middleware used generator
 type Middleware func(HandleFunc) HandleFunc
 

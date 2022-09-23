@@ -36,6 +36,7 @@ const (
 	GenericMethod = "$GenericCall"
 )
 
+// note 记录 service 的元数据信息
 // ServiceInfo to record meta info of service
 type ServiceInfo struct {
 	// deprecated, for compatibility
@@ -47,6 +48,7 @@ type ServiceInfo struct {
 	// HandlerType is the type value of a request handler from the generated code.
 	HandlerType interface{}
 
+	// note 记录该服务拥有的信息，对于泛化服务只有一个'GenericMethod'方法
 	// Methods contains the meta information of methods supported by the service.
 	// For generic service, there is only one method named by the constant `GenericMethod`.
 	Methods map[string]MethodInfo
@@ -88,6 +90,7 @@ func (i *ServiceInfo) MethodInfo(name string) MethodInfo {
 	return i.Methods[name]
 }
 
+// note 记录方法元信息：方法句柄、参数、结果和 是否oneWay
 // MethodInfo to record meta info of unary method
 type MethodInfo interface {
 	Handler() MethodHandler

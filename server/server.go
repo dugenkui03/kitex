@@ -46,6 +46,7 @@ import (
 	"github.com/cloudwego/kitex/pkg/transmeta"
 )
 
+// note Server是rpc服务的抽象：用来接收链接并将链接派遣到在此服务注册的 service
 // Server is a abstraction of a RPC server. It accepts connections and dispatches them to the service
 // registered to it.
 type Server interface {
@@ -55,6 +56,7 @@ type Server interface {
 	Stop() error
 }
 
+// NOTE 实现了 server.Service
 type server struct {
 	opt     *internal_server.Options
 	svcInfo *serviceinfo.ServiceInfo

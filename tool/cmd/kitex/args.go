@@ -40,7 +40,9 @@ type extraFlag struct {
 	check func(*arguments)
 }
 
+//arguments 参数类
 type arguments struct {
+	// 内嵌类
 	generator.Config
 	extends []*extraFlag
 }
