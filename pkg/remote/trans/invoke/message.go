@@ -39,7 +39,9 @@ type PayloadHandler interface {
 }
 
 // Message is the core abstraction.
+// note 核心抽象
 type Message interface {
+	// 保存了 connect 信息和数据操作信息
 	net.Conn
 	PayloadHandler
 }
