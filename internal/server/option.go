@@ -83,7 +83,8 @@ type Options struct {
 	SupportedTransportsFunc func(option remote.ServerOption) []string
 
 	// DebugInfo should only contain objects that are suitable for json serialization.
-	DebugInfo    utils.Slice
+	DebugInfo utils.Slice
+
 	DebugService diagnosis.Service
 
 	// Observability
