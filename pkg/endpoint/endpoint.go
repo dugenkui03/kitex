@@ -18,6 +18,7 @@ package endpoint
 
 import "context"
 
+// note ？远程调用的方法？
 // Endpoint represent one method for calling from remote.
 type Endpoint func(ctx context.Context, req, resp interface{}) (err error)
 

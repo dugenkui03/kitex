@@ -183,6 +183,7 @@ func (sr SynthesizedResolver) Name() string {
 	return sr.NameFunc()
 }
 
+// note 表示目标服务的一个实例，包含地址、权重和tag信息
 // Instance contains information of an instance from the target service.
 // note 目标服务的实例
 type Instance interface {

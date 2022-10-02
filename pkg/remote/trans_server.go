@@ -28,6 +28,7 @@ type TransServerFactory interface {
 }
 
 // TransServer is the abstraction for remote server.
+// note 远程服务的抽象
 type TransServer interface {
 	CreateListener(net.Addr) (net.Listener, error)
 	BootstrapServer(net.Listener) (err error)

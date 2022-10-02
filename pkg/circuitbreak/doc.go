@@ -15,4 +15,5 @@
  */
 
 // Package circuitbreak implements the circuit breaker logic.
+// note 实现 熔断逻辑
 package circuitbreak

@@ -30,9 +30,13 @@ type File struct {
 	Content string
 }
 
+// note 包含为服务生成包的信息
 // PackageInfo contains information to generate a package for a service.
 type PackageInfo struct {
-	Namespace    string            // a dot-separated string for generating service package under kitex_gen
+	// 逗号分割的包
+	// a dot-separated string for generating service package under kitex_gen
+	Namespace string
+	// note <package name, import path>，用来查找 imports
 	Dependencies map[string]string // package name => import path, used for searching imports
 	*ServiceInfo                   // the target service
 

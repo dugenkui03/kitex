@@ -17,6 +17,7 @@
 package discovery
 
 // Predefined discovery event names.
+// "发现事件"的名称
 const (
 	ChangeEventName = "discovery_change"
 	DeleteEventName = "discovery_delete"

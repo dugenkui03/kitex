@@ -61,6 +61,7 @@ type Server interface {
 	Stop() error
 }
 
+// NOTE 实现了 server.Service
 type server struct {
 	opt *internal_server.Options
 

@@ -124,6 +124,7 @@ func WithDestService(svr string) Option {
 	}}
 }
 
+// note 在服务发现的时候、指定目标实例的地址
 // WithHostPorts specifies the target instance addresses when doing service discovery.
 // It overwrites the results from the Resolver.
 func WithHostPorts(hostports ...string) Option {
@@ -182,6 +183,7 @@ func WithHTTPResolver(r http.Resolver) Option {
 	}}
 }
 
+// 链接类型 - 短链接：
 // WithShortConnection forces kitex to close connection after each call is finished.
 func WithShortConnection() Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {

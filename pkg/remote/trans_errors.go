@@ -53,6 +53,7 @@ var defaultTransErrorMessage = map[int32]string{
 }
 
 // TransError is the error that can be transmitted, it corresponds to TApplicationException in Thrift
+// note ？是可以传递的错误？
 type TransError struct {
 	message string
 	typeID  int32

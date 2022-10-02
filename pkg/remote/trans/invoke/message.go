@@ -32,6 +32,7 @@ var _ Message = &message{}
 // PayloadHandler is used to operate the payload.
 //		note 用来操作元数据
 type PayloadHandler interface {
+	// note 设置请求数据、相应数据，请求数据读取缓存、相应数据读取缓存
 	SetRequestBytes(buf []byte) error
 	GetResponseBytes() ([]byte, error)
 	GetRequestReaderByteBuffer() remote.ByteBuffer
@@ -42,10 +43,12 @@ type PayloadHandler interface {
 // Message is the core abstraction.
 // note 核心抽象 保存了 connect信息 和 数据操作能力
 type Message interface {
+	// note 两个内嵌类
 	net.Conn
 	PayloadHandler
 }
 
+// note Message的唯一实现：本地地址、被调服务地址、请求和相应
 type message struct {
 	localAddr  net.Addr
 	remoteAddr net.Addr

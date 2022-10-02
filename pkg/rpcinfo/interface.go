@@ -25,6 +25,7 @@ import (
 	"github.com/cloudwego/kitex/transport"
 )
 
+// note 包含 c/s 某端的信息
 // EndpointInfo contains info for endpoint.
 type EndpointInfo interface {
 	ServiceName() string
@@ -86,8 +87,11 @@ type Invocation interface {
 // RPCInfo is the core abstraction of information about an RPC in Kitex.
 // note kitex 中 RPC 的核心抽象
 type RPCInfo interface {
+	// 谁发的信息
 	From() EndpointInfo
+	// 谁是接受者
 	To() EndpointInfo
+	// 调用信息：
 	Invocation() Invocation
 	Config() RPCConfig
 	Stats() RPCStats

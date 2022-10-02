@@ -28,6 +28,7 @@ const (
 )
 
 // Queue is a ring to collect events.
+// note 收集 event 的 ring
 type Queue interface {
 	Push(e *Event)
 	Dump() interface{}
