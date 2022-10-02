@@ -23,17 +23,20 @@ import (
 )
 
 // Picker picks an instance for next RPC call.
+// note 为下次rpc调用选择一个实例
 type Picker interface {
 	Next(ctx context.Context, request interface{}) discovery.Instance
 }
 
 // Loadbalancer generates pickers for the given service discovery result.
+// note 为给定的服务发现结果生成 Picker（见上
 type Loadbalancer interface {
 	GetPicker(discovery.Result) Picker
 	Name() string // unique key
 }
 
 // Rebalancer is a kind of Loadbalancer that performs rebalancing when the result of service discovery changes.
+// note 当服务发现结果发生改变的时候、进行 re-balancing
 type Rebalancer interface {
 	Rebalance(discovery.Change)
 	Delete(discovery.Change)

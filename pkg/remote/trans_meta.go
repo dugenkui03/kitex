@@ -21,6 +21,7 @@ import (
 )
 
 // MetaHandler reads or writes metadata through certain protocol.
+// note 通过指定的协议读写元数据
 type MetaHandler interface {
 	WriteMeta(ctx context.Context, msg Message) (context.Context, error)
 	ReadMeta(ctx context.Context, msg Message) (context.Context, error)

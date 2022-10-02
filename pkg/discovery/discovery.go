@@ -53,19 +53,29 @@ type Change struct {
 }
 
 // Resolver resolves the target endpoint into a list of Instance.
+// note 将目标端点解析为一系列的实例
 type Resolver interface {
 	// Target should return a description for the given target that is suitable for being a key for cache.
+	// note 返回 target端点信息的描述、该描述应该适合作为缓存的key
 	Target(ctx context.Context, target rpcinfo.EndpointInfo) (description string)
 
 	// Resolve returns a list of instances for the given description of a target.
+	// note 根据对目标端点的描述、获取目标端点的实例列表
+	// type Result struct {
+	//	Cacheable bool
+	//	CacheKey  string
+	//	Instances []Instance
+	//}
 	Resolve(ctx context.Context, desc string) (Result, error)
 
-	// Diff computes the difference between two results.
+	// Diff computes the difference between two results Result.
 	// When `next` is cacheable, the Change should be cacheable, too. And the `Result` field's CacheKey in
 	// the return value should be set with the given cacheKey.
+	// note 计算两个 Result 之间的差异
 	Diff(cacheKey string, prev, next Result) (Change, bool)
 
 	// Name returns the name of the resolver.
+	// 解析起名称
 	Name() string
 }
 
@@ -121,6 +131,7 @@ func (i *instance) Tag(key string) (value string, exist bool) {
 }
 
 // NewInstance creates a Instance using the given network, address and tags
+// note 使用给定的数据查查找
 func NewInstance(network, address string, weight int, tags map[string]string) Instance {
 	return &instance{
 		addr:   utils.NewNetAddr(network, address),
@@ -129,12 +140,17 @@ func NewInstance(network, address string, weight int, tags map[string]string) In
 	}
 }
 
-// SynthesizedResolver synthesizes a Resolver using a resolve function.
+// SynthesizedResolver synthesizes(合成) a Resolver using a resolve function.
 type SynthesizedResolver struct {
-	TargetFunc  func(ctx context.Context, target rpcinfo.EndpointInfo) string
+	TargetFunc func(ctx context.Context, target rpcinfo.EndpointInfo) string
+
+	// 根据对目标端点的描述、获取目标端点的实例列表
 	ResolveFunc func(ctx context.Context, key string) (Result, error)
-	DiffFunc    func(key string, prev, next Result) (Change, bool)
-	NameFunc    func() string
+
+	DiffFunc func(key string, prev, next Result) (Change, bool)
+
+	// 解析器的名称
+	NameFunc func() string
 }
 
 // Target implements the Resolver interface.
@@ -152,6 +168,7 @@ func (sr SynthesizedResolver) Resolve(ctx context.Context, key string) (Result, 
 
 // Diff implements the Resolver interface.
 func (sr SynthesizedResolver) Diff(key string, prev, next Result) (Change, bool) {
+	// note 如果没有设定 diff Func，则直接调用 DefaultDiff(key/prev/next)返回结果
 	if sr.DiffFunc == nil {
 		return DefaultDiff(key, prev, next)
 	}
@@ -167,6 +184,7 @@ func (sr SynthesizedResolver) Name() string {
 }
 
 // Instance contains information of an instance from the target service.
+// note 目标服务的实例
 type Instance interface {
 	Address() net.Addr
 	Weight() int

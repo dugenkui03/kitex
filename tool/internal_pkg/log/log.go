@@ -21,6 +21,7 @@ import (
 )
 
 // Verbose decides whether the informatc logs should be output.
+// note 是否因该输出日志信息
 var Verbose bool
 
 // Logger .

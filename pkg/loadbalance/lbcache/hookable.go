@@ -25,6 +25,7 @@ import (
 
 // intercept the rebalancer and call hooks
 // wrap the loadbalance.Rebalancer and execute registered hooks
+// note loadbalance.Rebalancer 的切面方法
 type hookableRebalancer struct {
 	inner          loadbalance.Rebalancer
 	rebalanceL     sync.Mutex
@@ -40,6 +41,7 @@ var (
 	_ Hookable               = (*hookableRebalancer)(nil)
 )
 
+// 默认的 平衡器钩子对象
 func newHookRebalancer(inner loadbalance.Rebalancer) *hookableRebalancer {
 	return &hookableRebalancer{
 		inner:          inner,
@@ -102,8 +104,10 @@ func (b *hookableRebalancer) DeregisterDeleteHook(index int) {
 	delete(b.deleteHooks, index)
 }
 
+// 啥也不干
 type noopHookRebalancer struct{}
 
+// note Hookable 是接口、 noopHookRebalancer 是结构类型。_ 可以在编译的时候校验 noopHookRebalancer 实现了 Hookable 接口
 var _ Hookable = (*noopHookRebalancer)(nil)
 
 func (noopHookRebalancer) RegisterRebalanceHook(func(ch *discovery.Change)) int { return 0 }

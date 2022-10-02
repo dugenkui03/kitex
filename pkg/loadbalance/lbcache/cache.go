@@ -44,18 +44,23 @@ var (
 )
 
 // Options for create builder
+// note 缓存builder
 type Options struct {
 	// refresh discovery result timely
+	// 默认刷新时间
 	RefreshInterval time.Duration
 
 	// Balancer expire check interval
 	// we need remove idle Balancers for resource saving
+	// 过期检查间隔：需要移除空闲的 平衡器 来节省资源
 	ExpireInterval time.Duration
 
 	// DiagnosisService is used register info for diagnosis
+	// 注册诊断的信息：RegisterProbeFunc(ProbeName, ProbeFunc)
 	DiagnosisService diagnosis.Service
 }
 
+//check 检查刷新时间和过期时间设置是否合理
 func (v *Options) check() {
 	if v.RefreshInterval <= 0 {
 		v.RefreshInterval = defaultRefreshInterval
@@ -66,6 +71,7 @@ func (v *Options) check() {
 }
 
 // Hookable add hook for rebalancer events
+// note 为 平衡器时间添加 event
 type Hookable interface {
 	// register loadbalance rebalance hook for Rebalance events
 	RegisterRebalanceHook(func(ch *discovery.Change)) (index int)
@@ -87,11 +93,13 @@ type BalancerFactory struct {
 	sfg        singleflight.Group
 }
 
+//cacheKey 缓存key，格式为
 func cacheKey(resolver, balancer string, opts Options) string {
 	return fmt.Sprintf("%s|%s|{%s %s}", resolver, balancer, opts.RefreshInterval, opts.ExpireInterval)
 }
 
 // NewBalancerFactory get or create a balancer factory for balancer instance
+// note 创建 平衡器/balancer 工厂
 // cache key with resolver name, balancer name and options
 func NewBalancerFactory(resolver discovery.Resolver, balancer loadbalance.Loadbalancer, opts Options) *BalancerFactory {
 	opts.check()
@@ -171,8 +179,8 @@ func (b *BalancerFactory) Get(ctx context.Context, target rpcinfo.EndpointInfo) 
 	return val.(*Balancer), nil
 }
 
-// Balancer same with loadbalance.Loadbalancer but without resolver.Result that
-// has been cached
+// Balancer same with loadbalance.Loadbalancer but without resolver.Result that has been cached
+//
 type Balancer struct {
 	b            *BalancerFactory
 	target       string       // a description returned from the resolver's Target method
@@ -199,6 +207,7 @@ func (bl *Balancer) refresh() {
 }
 
 // GetResult returns the discovery result that the Balancer holds.
+// note 获取 均衡器持有的 服务发现的结果
 func (bl *Balancer) GetResult() (res discovery.Result, ok bool) {
 	if v := bl.res.Load(); v != nil {
 		return v.(discovery.Result), true

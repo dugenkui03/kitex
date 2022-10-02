@@ -435,6 +435,7 @@ func (cb *consistBalancer) updateConsistInfo(e discovery.Result) {
 
 // Rebalance implements the Rebalancer interface.
 func (cb *consistBalancer) Rebalance(change discovery.Change) {
+	// note 不允许缓存则直接返回
 	if !change.Result.Cacheable {
 		return
 	}

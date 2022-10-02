@@ -24,11 +24,24 @@ import (
 type PayloadCodec int
 
 // PayloadCodec supported by kitex.
+// note 数据格式类型：thrift 或者 protobuf
 const (
 	Thrift PayloadCodec = iota
 	Protobuf
 )
 
+// String prints human readable information.
+func (p PayloadCodec) String() string {
+	switch p {
+	case Thrift:
+		return "Thrift"
+	case Protobuf:
+		return "Protobuf"
+	}
+	panic("unknown payload type")
+}
+
+// 泛化调用的服务和方法的名称。
 const (
 	// GenericService name
 	GenericService = "$GenericService" // private as "$"
@@ -45,16 +58,20 @@ type ServiceInfo struct {
 	ServiceName string
 
 	// HandlerType is the type value of a request handler from the generated code.
+	// note 来自于 生成的代码的请求处理器的类型值
 	HandlerType interface{}
 
 	// Methods contains the meta information of methods supported by the service.
 	// For generic service, there is only one method named by the constant `GenericMethod`.
+	// note 服务支持的方法名称到方法元数据
 	Methods map[string]MethodInfo
 
 	// PayloadCodec is the codec of payload.
+	// 消息协议类型
 	PayloadCodec PayloadCodec
 
 	// KiteXGenVersion is the version of command line tool 'kitex'.
+	// note kitex 的类型
 	KiteXGenVersion string
 
 	// Extra is for future feature info, to avoid compatibility issue
@@ -63,6 +80,7 @@ type ServiceInfo struct {
 
 	// GenericMethod returns a MethodInfo for the given name.
 	// It is used by generic calls only.
+	// note 返回指定名称的方法信息，一般被泛化调用使用
 	GenericMethod func(name string) MethodInfo
 }
 
@@ -79,6 +97,7 @@ func (i *ServiceInfo) GetPackageName() (pkg string) {
 
 // MethodInfo gets MethodInfo.
 func (i *ServiceInfo) MethodInfo(name string) MethodInfo {
+	// 泛化调用
 	if i.ServiceName == GenericService {
 		if i.GenericMethod != nil {
 			return i.GenericMethod(name)
@@ -89,6 +108,7 @@ func (i *ServiceInfo) MethodInfo(name string) MethodInfo {
 }
 
 // MethodInfo to record meta info of unary method
+// note 方法句柄、参数、结果是否 oneway
 type MethodInfo interface {
 	Handler() MethodHandler
 	NewArgs() interface{}
@@ -100,6 +120,7 @@ type MethodInfo interface {
 type MethodHandler func(ctx context.Context, handler, args, result interface{}) error
 
 // NewMethodInfo is called in generated code to build method info
+// note 使用方法句柄、参数和结果方法、isOneWay 构造 MethodInfo
 func NewMethodInfo(methodHandler MethodHandler, newArgsFunc, newResultFunc func() interface{}, oneWay bool) MethodInfo {
 	return methodInfo{
 		handler:       methodHandler,
@@ -134,15 +155,4 @@ func (m methodInfo) NewResult() interface{} {
 // OneWay implements the MethodInfo interface.
 func (m methodInfo) OneWay() bool {
 	return m.oneWay
-}
-
-// String prints human readable information.
-func (p PayloadCodec) String() string {
-	switch p {
-	case Thrift:
-		return "Thrift"
-	case Protobuf:
-		return "Protobuf"
-	}
-	panic("unknown payload type")
 }

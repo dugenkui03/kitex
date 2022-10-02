@@ -63,7 +63,8 @@ type rpcConfig struct {
 	readWriteTimeout  time.Duration
 	ioBufferSize      int
 	transportProtocol transport.Protocol
-	interactionMode   InteractionMode
+	// note 交互模式：双向、单向 和流式
+	interactionMode InteractionMode
 }
 
 func init() {

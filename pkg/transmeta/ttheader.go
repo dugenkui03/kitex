@@ -41,6 +41,7 @@ var (
 type clientTTHeaderHandler struct{}
 
 // WriteMeta of clientTTHeaderHandler writes headers of TTHeader protocol to transport
+// note 按照 TTHeader protocol 写 header 进行数据传输
 func (ch *clientTTHeaderHandler) WriteMeta(ctx context.Context, msg remote.Message) (context.Context, error) {
 	if !isTTHeader(msg) {
 		return ctx, nil
@@ -109,5 +110,6 @@ func (sh *serverTTHeaderHandler) WriteMeta(ctx context.Context, msg remote.Messa
 
 func isTTHeader(msg remote.Message) bool {
 	transProto := msg.ProtocolInfo().TransProto
+	// note 传输协议按位与，有 TTHeader
 	return transProto&transport.TTHeader == transport.TTHeader
 }

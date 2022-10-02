@@ -31,21 +31,25 @@ import (
 )
 
 // EnvPluginMode is an environment that kitex uses to distinguish run modes.
+// note 用来区别运行模式的环境变量
 const EnvPluginMode = "KITEX_PLUGIN_MODE"
 
-// ExtraFlag is designed for adding flags that is irrelevant to
-// code generation.
+// ExtraFlag is designed for adding flags that is irrelevant to code generation.
+// note 为生成的代码附加额外的数据。注意，两个变量都是函数变量、创建对象的时候指定
 type ExtraFlag struct {
 	// apply may add flags to the FlagSet.
+	// note 将 flag 添加到 FlagSet
 	Apply func(*flag.FlagSet)
 
 	// check may perform any value checking for flags added by apply above.
 	// When an error occur, check should directly terminate the program by
 	// os.Exit with exit code 1 for internal error and 2 for invalid arguments.
+	// note 检查参数配置是否合法
 	Check func(*Arguments)
 }
 
 // Arguments .
+// note kitex 参数配置：代码生成配置 和 额外的 flag
 type Arguments struct {
 	generator.Config
 	extends []*ExtraFlag
@@ -66,6 +70,7 @@ func (a *Arguments) AddExtraFlag(e *ExtraFlag) {
 	a.extends = append(a.extends, e)
 }
 
+//guessIDLType 使用文件名推测文件类型
 func (a *Arguments) guessIDLType() (string, bool) {
 	switch {
 	case strings.HasSuffix(a.IDL, ".thrift"):
@@ -78,34 +83,52 @@ func (a *Arguments) guessIDLType() (string, bool) {
 
 func (a *Arguments) buildFlags(version string) *flag.FlagSet {
 	f := flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+
 	f.BoolVar(&a.NoFastAPI, "no-fast-api", false,
 		"Generate codes without injecting fast method.")
+
 	f.StringVar(&a.ModuleName, "module", "",
 		"Specify the Go module name to generate go.mod.")
+
 	f.StringVar(&a.ServiceName, "service", "",
 		"Specify the service name to generate server side codes.")
+
 	f.StringVar(&a.Use, "use", "",
 		"Specify the kitex_gen package to import when generate server side codes.")
+
 	f.BoolVar(&a.Verbose, "v", false, "") // short for -verbose
+
 	f.BoolVar(&a.Verbose, "verbose", false,
 		"Turn on verbose mode.")
+
 	f.BoolVar(&a.GenerateInvoker, "invoker", false,
 		"Generate invoker side codes when service name is specified.")
+
 	f.StringVar(&a.IDLType, "type", "unknown", "Specify the type of IDL: 'thrift' or 'protobuf'.")
+
 	f.Var(&a.Includes, "I", "Add an IDL search path for includes.")
+
 	f.Var(&a.ThriftOptions, "thrift", "Specify arguments for the thrift compiler.")
+
 	f.Var(&a.ThriftPlugins, "thrift-plugin", "Specify thrift plugin arguments for the thrift compiler.")
+
 	f.Var(&a.ProtobufOptions, "protobuf", "Specify arguments for the protobuf compiler.")
+
 	f.BoolVar(&a.CombineService, "combine-service", false,
 		"Combine services in root thrift file.")
+
 	f.BoolVar(&a.CopyIDL, "copy-idl", false,
 		"Copy each IDL file to the output path.")
+
 	f.StringVar(&a.ExtensionFile, "template-extension", a.ExtensionFile,
 		"Specify a file for template extension.")
+
 	f.BoolVar(&a.FrugalPretouch, "frugal-pretouch", false,
 		"Use frugal to compile arguments and results when new clients and servers.")
 
 	a.Version = version
+
+	// 添加多个元素到 string slice
 	a.ThriftOptions = append(a.ThriftOptions,
 		"naming_style=golint",
 		"ignore_initialisms",
@@ -114,6 +137,8 @@ func (a *Arguments) buildFlags(version string) *flag.FlagSet {
 		"compatible_names",
 	)
 
+	// a.extends 类型是 []*ExtraFlag
+	// note 校验参数合法性
 	for _, e := range a.extends {
 		e.Apply(f)
 	}
@@ -141,11 +166,14 @@ func (a *Arguments) ParseArgs(version string) {
 
 	log.Verbose = a.Verbose
 
+	// 检查参数配置是否合法
 	for _, e := range a.extends {
 		e.Check(a)
 	}
 
-	a.checkIDL(f.Args())
+	// returns the non-flag arguments
+	argsWithoutFlag := f.Args()
+	a.checkIDL(argsWithoutFlag)
 	a.checkServiceName()
 	a.checkPath()
 }
@@ -164,6 +192,7 @@ func (a *Arguments) checkIDL(files []string) {
 	switch a.IDLType {
 	case "thrift", "protobuf":
 	case "unknown":
+		// note 如果不是 thrift 或者 pb，则去推测该类型
 		if typ, ok := a.guessIDLType(); ok {
 			a.IDLType = typ
 		} else {
@@ -256,6 +285,7 @@ func (a *Arguments) BuildCmd(out io.Writer) *exec.Cmd {
 		os.Exit(1)
 	}
 
+	// packs the Config into a slice of "key=val" strings
 	kas := strings.Join(a.Config.Pack(), ",")
 	cmd := &exec.Cmd{
 		Path:   lookupTool(a.IDLType),
@@ -263,6 +293,7 @@ func (a *Arguments) BuildCmd(out io.Writer) *exec.Cmd {
 		Stdout: io.MultiWriter(out, os.Stdout),
 		Stderr: io.MultiWriter(out, os.Stderr),
 	}
+
 	if a.IDLType == "thrift" {
 		os.Setenv(EnvPluginMode, thriftgo.PluginName)
 		cmd.Args = append(cmd.Args, "thriftgo")

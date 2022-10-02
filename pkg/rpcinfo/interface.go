@@ -55,6 +55,7 @@ type Event interface {
 }
 
 // Timeouts contains settings of timeouts.
+// note rpc超时、连接超时、读写超时
 type Timeouts interface {
 	RPCTimeout() time.Duration
 	ConnectTimeout() time.Duration
@@ -83,6 +84,7 @@ type Invocation interface {
 }
 
 // RPCInfo is the core abstraction of information about an RPC in Kitex.
+// note kitex 中 RPC 的核心抽象
 type RPCInfo interface {
 	From() EndpointInfo
 	To() EndpointInfo

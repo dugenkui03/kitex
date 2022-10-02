@@ -218,6 +218,7 @@ func WithLogger(logger klog.FormatLogger) Option {
 }
 
 // WithLoadBalancer sets the loadbalancer for client.
+// note 设置负载均衡器
 func WithLoadBalancer(lb loadbalance.Loadbalancer, opts ...*lbcache.Options) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithLoadBalancer(%+v, %+v)", lb, opts))
