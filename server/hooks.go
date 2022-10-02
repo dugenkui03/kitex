@@ -16,10 +16,15 @@
 
 package server
 
-import "sync"
+import (
+	"io"
+	"sync"
+)
 
+// note 添加服务启动后的钩子方法
 // RegisterStartHook add hook which is executed after the server starts.
 func RegisterStartHook(h func()) {
+	io.WriteString()
 	muStartHooks.Lock()
 	defer muStartHooks.Unlock()
 	onServerStart.add(h)

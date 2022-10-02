@@ -141,6 +141,7 @@ func (s *CBSuite) UpdateInstanceCBConfig(cfg CBConfig) {
 func (s *CBSuite) SetEventBusAndQueue(bus event.Bus, events event.Queue) {
 	s.events = events
 	if bus != nil {
+		// note 第二个参数是 func: type Callback func(*Event)
 		bus.Watch(discovery.ChangeEventName, s.discoveryChangeHandler)
 	}
 }

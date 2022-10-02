@@ -104,8 +104,10 @@ func rpcTimeoutMW(mwCtx context.Context) endpoint.Middleware {
 
 			var err error
 			start := time.Now()
+			// note error 管道
 			done := make(chan error, 1)
 			workerPool.Go(func() {
+				// 延迟函数
 				defer func() {
 					if panicInfo := recover(); panicInfo != nil {
 						e := panicToErr(ctx, panicInfo, ri)
@@ -114,9 +116,11 @@ func rpcTimeoutMW(mwCtx context.Context) endpoint.Middleware {
 					if err == nil || !errors.Is(err, kerrors.ErrRPCFinish) {
 						// Don't regards ErrRPCFinish as normal error, it happens in retry scene,
 						// ErrRPCFinish means previous call returns first but is decoding.
+						// note 关闭管道之后就不能往管道添加数据了
 						close(done)
 					}
 				}()
+				// note type Endpoint func(ctx context.Context, req, resp interface{}) (err error)
 				err = next(ctx, request, response)
 				if err != nil && ctx.Err() != nil &&
 					!kerrors.IsTimeoutError(err) && !errors.Is(err, kerrors.ErrRPCFinish) {

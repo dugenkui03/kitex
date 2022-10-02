@@ -17,6 +17,7 @@
 package remote
 
 import (
+	bytes "bytes"
 	"testing"
 
 	"github.com/cloudwego/kitex/internal/test"
@@ -41,6 +42,7 @@ func TestDefaultByteBuffer(t *testing.T) {
 	err = buf4.AppendBuffer(buf3)
 	test.Assert(t, err == nil)
 	checkReadable(t, buf4)
+	bytes.Buffer
 }
 
 func TestDefaultWriterBuffer(t *testing.T) {

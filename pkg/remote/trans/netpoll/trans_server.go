@@ -51,13 +51,19 @@ func (f *netpollTransServerFactory) NewTransServer(opt *remote.ServerOption, tra
 }
 
 type transServer struct {
-	opt       *remote.ServerOption
+	opt *remote.ServerOption
+
+	// note 包含处理错误的逻辑
 	transHdlr remote.ServerTransHandler
 
-	evl       netpoll.EventLoop
-	ln        net.Listener
-	lncfg     net.ListenConfig
+	evl   netpoll.EventLoop
+	ln    net.Listener
+	lncfg net.ListenConfig
+
+	// note 服务建立链接的数量？
 	connCount utils.AtomicInt
+
+	// note 继承了不可重入锁
 	sync.Mutex
 }
 
@@ -78,20 +84,24 @@ func (ts *transServer) BootstrapServer(ln net.Listener) (err error) {
 	if ln == nil {
 		return errors.New("listener is nil in netpoll transport server")
 	}
+	// 更新 ts 的值
 	ts.ln = ln
 	opts := []netpoll.Option{
+		// 最大链接超时
 		netpoll.WithIdleTimeout(ts.opt.MaxConnectionIdleTime),
+		// 读写超时
 		netpoll.WithReadTimeout(ts.opt.ReadWriteTimeout),
 	}
 
+	// note lock
 	ts.Lock()
 	opts = append(opts, netpoll.WithOnPrepare(ts.onConnActive))
 	ts.evl, err = netpoll.NewEventLoop(ts.onConnRead, opts...)
 	ts.Unlock()
+	// note end of lock
 
 	if err == nil {
-		// Convert the listener so that closing it also stops the
-		// event loop in netpoll.
+		// Convert the listener so that closing it also stops the event loop in netpoll.
 		ts.Lock()
 		ts.ln, err = netpoll.ConvertListener(ts.ln)
 		ts.Unlock()
@@ -135,11 +145,19 @@ func (ts *transServer) ConnCount() utils.AtomicInt {
 // 2. Doesn't need to init RPCInfo if it's not RPC request, such as heartbeat.
 func (ts *transServer) onConnActive(conn netpoll.Connection) context.Context {
 	ctx := context.Background()
+	// note 激活阶段报错则在 transRecover 中进行恢复并打印错误日志
 	defer transRecover(ctx, conn, "OnActive")
-	conn.AddCloseCallback(func(connection netpoll.Connection) error {
-		ts.onConnInactive(ctx, conn)
-		return nil
-	})
+
+	// note 添加 close 的回调方法
+	conn.AddCloseCallback(
+		// type CloseCallback func(connection Connection) error
+		func(connection netpoll.Connection) error {
+			ts.onConnInactive(ctx, conn)
+			return nil
+		},
+	)
+
+	// note ？统计服务建立链接的数量？
 	ts.connCount.Inc()
 	ctx, err := ts.transHdlr.OnActive(ctx, conn)
 	if err != nil {
