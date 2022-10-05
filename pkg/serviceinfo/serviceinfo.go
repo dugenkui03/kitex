@@ -65,7 +65,7 @@ type ServiceInfo struct {
 	// note 记录该服务拥有的信息，对于泛化服务只有一个'GenericMethod'方法
 	// Methods contains the meta information of methods supported by the service.
 	// For generic service, there is only one method named by the constant `GenericMethod`.
-	// note 服务支持的方法名称到方法元数据
+	// note note 服务支持的方法名称到方法元数据
 	Methods map[string]MethodInfo
 
 	// PayloadCodec is the codec of payload.

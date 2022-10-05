@@ -175,6 +175,7 @@ func (s *server) buildInvokeChain() {
 //		给方法所属的对象注册上 服务信息 和 handle
 // note 不应该由用户直接调用。哪为什么不设置为不可导出
 func (s *server) RegisterService(svcInfo *serviceinfo.ServiceInfo, handler interface{}) error {
+	// note server 只能绑定一个服务信息
 	if s.svcInfo != nil {
 		panic(fmt.Sprintf("Service[%s] is already defined", s.svcInfo.ServiceName))
 	}
@@ -183,8 +184,9 @@ func (s *server) RegisterService(svcInfo *serviceinfo.ServiceInfo, handler inter
 	s.svcInfo = svcInfo
 	s.handler = handler
 
-	// TODO 会并发的调用到这里
+	// 其实是将<diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(s.svcInfo)> 注册进s.opt.DebugService
 	diagnosis.RegisterProbeFunc(s.opt.DebugService, diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(s.svcInfo))
+
 	return nil
 }
 

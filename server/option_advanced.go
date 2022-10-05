@@ -72,11 +72,16 @@ func WithACLRules(rules ...acl.RejectFunc) Option {
 
 // WithMetaHandler adds a MetaHandler.
 func WithMetaHandler(h remote.MetaHandler) Option {
-	return Option{F: func(o *internal_server.Options, di *utils.Slice) {
+
+	opFunc := func(o *internal_server.Options, di *utils.Slice) {
+
 		di.Push(fmt.Sprintf("WithMetaHandler(%T)", h))
 
 		o.MetaHandlers = append(o.MetaHandlers, h)
-	}}
+
+	}
+
+	return Option{F: opFunc}
 }
 
 // WithProxy sets the backward Proxy for server.
@@ -136,12 +141,13 @@ func WithGeneric(g generic.Generic) Option {
 }
 
 // WithErrorHandler sets the error handler.
-func WithErrorHandler(f func(error) error) Option {
+func WithErrorHandler(errorHandler func(error) error) Option {
 	return Option{F: func(o *internal_server.Options, di *utils.Slice) {
 		o.Once.OnceOrPanic()
-		di.Push(fmt.Sprintf("WithErrorHandler(%+v)", utils.GetFuncName(f)))
+		// di 类型为 []interface{}
+		di.Push(fmt.Sprintf("WithErrorHandler(%+v)", utils.GetFuncName(errorHandler)))
 
-		o.ErrHandle = f
+		o.ErrHandle = errorHandler
 	}}
 }
 
