@@ -44,6 +44,7 @@ type FrameWrite interface {
 }
 
 // ByteBuffer is the core abstraction of buffer in Kitex.
+// note Kitex 中 缓冲区的核心抽象
 type ByteBuffer interface {
 	io.ReadWriter
 

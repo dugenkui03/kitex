@@ -40,10 +40,11 @@ func NewIvkHandler(opt *remote.ServerOption, transHdlr remote.ServerTransHandler
 	}, nil
 }
 
-// Call implements the Handler interface.
+// Call implements the Handler( Call(Message) error ) interface.
 func (s *ivkHandler) Call(msg Message) (err error) {
 	ctx := context.Background()
 	// do onConnActive
+	// note 可能执行了 context.WithValue(ctx,k,v)
 	ctx, err = s.transHdlr.OnActive(ctx, msg)
 	if err != nil {
 		s.transHdlr.OnError(ctx, err, msg)

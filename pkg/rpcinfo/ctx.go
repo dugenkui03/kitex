@@ -29,6 +29,7 @@ var ctxRPCInfoKey ctxRPCInfoKeyType
 // NewCtxWithRPCInfo creates a new context with the RPCInfo given.
 func NewCtxWithRPCInfo(ctx context.Context, ri RPCInfo) context.Context {
 	if ri != nil {
+		// note 放进 k-v
 		return context.WithValue(ctx, ctxRPCInfoKey, ri)
 	}
 	return ctx

@@ -75,7 +75,8 @@ type Options struct {
 	ErrHandle        func(error) error
 	Targets          string
 	CBSuite          *circuitbreak.CBSuite
-	Timeouts         rpcinfo.TimeoutProvider
+	// note 优先级比价高的超时配置
+	Timeouts rpcinfo.TimeoutProvider
 
 	ACLRules []acl.RejectFunc
 

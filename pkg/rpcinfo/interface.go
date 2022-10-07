@@ -69,8 +69,13 @@ type TimeoutProvider interface {
 }
 
 // RPCConfig contains configuration for RPC.
+// note 包含 RPC 的配置信息
 type RPCConfig interface {
+	//	RPCTimeout() time.Duration
+	//	ConnectTimeout() time.Duration
+	//	ReadWriteTimeout() time.Duration
 	Timeouts
+
 	IOBufferSize() int
 	TransportProtocol() transport.Protocol
 	InteractionMode() InteractionMode

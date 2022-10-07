@@ -46,6 +46,7 @@ import (
 )
 
 // Option is the only way to config client.
+// Option 和 client.Option 完全等价
 type Option = client.Option
 
 // Options is used to initialize a client.
@@ -232,6 +233,7 @@ func WithLoadBalancer(lb loadbalance.Loadbalancer, opts ...*lbcache.Options) Opt
 }
 
 // WithRPCTimeout specifies the RPC timeout.
+// note 指定 client 所有调用的超时
 func WithRPCTimeout(d time.Duration) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithRPCTimeout(%dms)", d.Milliseconds()))
@@ -256,6 +258,7 @@ func WithConnectTimeout(d time.Duration) Option {
 // will be applied before the other timeout options in this package
 // and those in the callopt package. Thus it can not modify the
 // timeouts set by WithRPCTimeout or WithConnectTimeout.
+// note 动态提供超时配置
 func WithTimeoutProvider(p rpcinfo.TimeoutProvider) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithTimeoutProvider(%T(%+v))", p, p))

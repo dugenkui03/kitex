@@ -25,8 +25,8 @@ import (
 
 // Mask bits.
 const (
-	BitReadable = 1 << iota
-	BitWritable
+	BitReadable = 1 << iota // 01
+	BitWritable             // 10
 )
 
 var bytebufPool sync.Pool
@@ -286,12 +286,14 @@ func (b *defaultByteBuffer) NewBuffer() ByteBuffer {
 
 // Release will free the buffer already read.
 // After release, buffer read by Next/Skip/Peek is invalid.
+//
 func (b *defaultByteBuffer) Release(e error) (err error) {
 	b.zero()
 	bytebufPool.Put(b)
 	return
 }
 
+//zero 重置 b
 func (b *defaultByteBuffer) zero() {
 	b.status = 0
 	b.buff = nil

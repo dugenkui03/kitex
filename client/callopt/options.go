@@ -126,8 +126,7 @@ func WithHTTPHost(host string) Option {
 }
 
 // WithRPCTimeout specifies the RPC timeout for a RPC call.
-// FIXME: callopt.WithRPCTimeout works only when client.WithRPCTimeout or
-// client.WithTimeoutProvider is specified.
+// FIXME: callopt.WithRPCTimeout works only when client.WithRPCTimeout or client.WithTimeoutProvider is specified.
 func WithRPCTimeout(d time.Duration) Option {
 	return Option{func(o *CallOptions, di *strings.Builder) {
 		di.WriteString("WithRPCTimeout(")

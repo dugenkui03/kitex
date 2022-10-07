@@ -140,6 +140,7 @@ type MyService interface {
 	MockOneway(ctx context.Context, req *MyRequest) (err error)
 }
 
+// note 实现了 Read\Write 方法
 type myServiceMockArgs struct {
 	Req *MyRequest `thrift:"req,1" json:"req"`
 }

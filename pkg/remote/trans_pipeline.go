@@ -27,6 +27,7 @@ import (
 type BoundHandler interface{}
 
 // OutboundHandler is used to process write event.
+// note 用于处理 write 事件
 type OutboundHandler interface {
 	BoundHandler
 	Write(ctx context.Context, conn net.Conn, send Message) (context.Context, error)
