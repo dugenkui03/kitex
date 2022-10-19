@@ -15,6 +15,7 @@
  */
 
 // Package transport provides predefined transport protocol.
+// note 返回预先定义好的传输协议
 package transport
 
 // Protocol indicates the transport protocol.
@@ -25,8 +26,8 @@ type Protocol int
 const (
 	PurePayload Protocol = 0
 
-	TTHeader Protocol = 1 << iota
-	Framed
+	TTHeader Protocol = 1 << iota // note iota 在此处是 2
+	Framed                        // note 二进制协议
 	HTTP
 	GRPC
 
@@ -57,6 +58,8 @@ func (tp Protocol) String() string {
 
 // WithMeta reports whether the protocol is capable of carrying meta
 // data besides the payload.
+// note 协议是否可以携带出了元数据之外的 payload
+// todo 万一是 Unknow 呢
 func (tp Protocol) WithMeta() bool {
 	return tp != PurePayload && tp != Framed
 }

@@ -21,6 +21,7 @@ package diagnosis
 type ProbeName string
 
 // ProbeFunc is used to get probe data, it is usually a data dump func.
+// note 用来获取 探测数据，经常是个数据dump函数
 type ProbeFunc func() interface{}
 
 // Service is the interface for debug service.

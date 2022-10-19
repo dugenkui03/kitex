@@ -16,4 +16,5 @@
 
 // Package remote defines all interfaces that are used to do transport with peer side
 // and contains default extension implementations.
+// note 包含了与远端进行数据传输的所有接口和实现
 package remote

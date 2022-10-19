@@ -21,6 +21,7 @@ import "net"
 var _ net.Addr = &NetAddr{}
 
 // NetAddr implements the net.Addr interface.
+// note NewNetAddr("tcp", "to")
 type NetAddr struct {
 	network string
 	address string

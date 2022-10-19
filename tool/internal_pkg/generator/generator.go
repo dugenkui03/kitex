@@ -28,6 +28,7 @@ import (
 	"github.com/cloudwego/kitex/tool/internal_pkg/util"
 )
 
+// 常量，不可修改
 // Constants .
 const (
 	KitexGenPath = "kitex_gen"
@@ -44,6 +45,7 @@ const (
 )
 
 var (
+	// note 包倒入路径
 	kitexImportPath = "github.com/cloudwego/kitex"
 
 	globalMiddlewares  []Middleware
@@ -92,9 +94,15 @@ type Generator interface {
 
 // Config .
 type Config struct {
-	Verbose         bool
-	GenerateMain    bool // whether stuff in the main package should be generated
-	GenerateInvoker bool // generate main.go with invoker when main package generate
+	// ?是否应该输出日志信息?
+	Verbose bool
+
+	// whether stuff in the main package should be generated
+	// note main 包中内容是否生成
+	GenerateMain bool
+	// generate main.go with invoker when main package generate
+	// 如果main包中内容生成、则在main中生成 invoker
+	GenerateInvoker bool
 	Version         string
 	NoFastAPI       bool
 	ModuleName      string
@@ -118,6 +126,7 @@ type Config struct {
 }
 
 // Pack packs the Config into a slice of "key=val" strings.
+// note 打印信息
 func (c *Config) Pack() (res []string) {
 	t := reflect.TypeOf(c).Elem()
 	v := reflect.ValueOf(c).Elem()
@@ -244,6 +253,7 @@ func NewGenerator(config *Config, middlewares []Middleware) Generator {
 	return g
 }
 
+// note 命名函数
 // Middleware used generator
 type Middleware func(HandleFunc) HandleFunc
 

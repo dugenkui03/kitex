@@ -26,14 +26,18 @@ import (
 )
 
 // ThriftMessageCodec is used to codec thrift messages.
+// note 用于编码、解码、序列化、反序列化 thrift 消息
 type ThriftMessageCodec struct {
 	tb    *thrift.TMemoryBuffer
 	tProt thrift.TProtocol
 }
 
 // NewThriftMessageCodec creates a new ThriftMessageCodec.
+// note 创建一个新的 thrift消息编码器，默认使用二进制协议
 func NewThriftMessageCodec() *ThriftMessageCodec {
+	// 缓冲区默认为 1024个字节、即1kb
 	transport := thrift.NewTMemoryBufferLen(1024)
+	// 协议对象
 	tProt := thrift.NewTBinaryProtocol(transport, true, true)
 
 	return &ThriftMessageCodec{
@@ -43,17 +47,25 @@ func NewThriftMessageCodec() *ThriftMessageCodec {
 }
 
 // Encode do thrift message encode.
+// note
 // Notice! msg must be XXXArgs/XXXResult that the wrap struct for args and result, not the actual args or result
 // Notice! seqID will be reset in kitex if the buffer is used for generic call in client side, set seqID=0 is suggested
 // when you call this method as client.
-func (t *ThriftMessageCodec) Encode(method string, msgType thrift.TMessageType, seqID int32, msg thrift.TStruct) (b []byte, err error) {
+func (t *ThriftMessageCodec) Encode(
+	method string, // 方法名称
+	msgType thrift.TMessageType, // 消息类型
+	seqID int32, // 请求序列
+	msg thrift.TStruct, // 请求参数
+) (b []byte, err error) {
 	if method == "" {
 		return nil, errors.New("empty methodName in thrift RPCEncode")
 	}
-	t.tb.Reset()
+	t.tb.Reset() // 重置缓冲区
 	if err = t.tProt.WriteMessageBegin(method, msgType, seqID); err != nil {
 		return
 	}
+
+	// note 这里调用的是 请求参数的 Write
 	if err = msg.Write(t.tProt); err != nil {
 		return
 	}
@@ -61,6 +73,9 @@ func (t *ThriftMessageCodec) Encode(method string, msgType thrift.TMessageType, 
 		return
 	}
 	b = append(b, t.tb.Bytes()...)
+	// eg: [128 1 0 1 0 0 0 4 109 111 99 107 0 0 0 0]
+	//	   [128 1 0 1 0 0 0 9 109 111 99 107 69 114 114 111 114 0 0 0 0]
+	fmt.Printf("bbbbb,%v\n", b)
 	return
 }
 

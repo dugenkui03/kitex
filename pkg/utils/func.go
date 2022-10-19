@@ -22,6 +22,7 @@ import (
 )
 
 // GetFuncName returns the function name of i.
+// note 获取函数名称
 func GetFuncName(i interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 }

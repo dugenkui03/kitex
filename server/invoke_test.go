@@ -32,10 +32,12 @@ import (
 // TestInvokerCall tests Invoker, call Kitex server just like SDK.
 func TestInvokerCall(t *testing.T) {
 	var gotErr atomic.Value
-	invoker := NewInvoker(WithMetaHandler(noopMetahandler{}), WithErrorHandler(func(err error) error {
+
+	handler := func(err error) error {
 		gotErr.Store(err)
 		return err
-	}))
+	}
+	invoker := NewInvoker(WithMetaHandler(noopMetahandler{}), WithErrorHandler(handler))
 
 	err := invoker.RegisterService(mocks.ServiceInfo(), mocks.MyServiceHandler())
 	if err != nil {

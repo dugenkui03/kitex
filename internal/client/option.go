@@ -54,6 +54,7 @@ func init() {
 	remote.PutPayloadCode(serviceinfo.Protobuf, protobuf.NewProtobufCodec())
 }
 
+// note 用来初始化client
 // Options is used to initialize a client.
 type Options struct {
 	Cli     *rpcinfo.EndpointBasicInfo
@@ -74,7 +75,8 @@ type Options struct {
 	ErrHandle        func(error) error
 	Targets          string
 	CBSuite          *circuitbreak.CBSuite
-	Timeouts         rpcinfo.TimeoutProvider
+	// note 优先级比价高的超时配置
+	Timeouts rpcinfo.TimeoutProvider
 
 	ACLRules []acl.RejectFunc
 
@@ -117,8 +119,10 @@ func (o *Options) Apply(opts []Option) {
 	}
 }
 
+// note 配置client的唯一方式
 // Option is the only way to config client.
 type Option struct {
+	// 唯一字段是个函数
 	F func(o *Options, di *utils.Slice)
 }
 

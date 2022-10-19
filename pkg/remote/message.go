@@ -35,6 +35,8 @@ func init() {
 	transInfoPool.New = newTransInfo
 }
 
+// note 消息类型：无效的消息格式，请求，响应，异常， oneway，stream
+
 // MessageType indicates the type of message.
 type MessageType int32
 
@@ -58,15 +60,20 @@ const (
 	ReadFailed string = "RFailed"
 
 	// MeshHeader use in message.Tag to check MeshHeader
+	// todo
 	MeshHeader string = "mHeader"
 )
 
+// note 空的 协议信息
 var emptyProtocolInfo ProtocolInfo
 
 // ProtocolInfo is used to indicate the transport protocol and payload codec information.
+// note 表示传输协议 和 数据的编解码信息
 type ProtocolInfo struct {
+	// note 传输协议
 	TransProto transport.Protocol
-	CodecType  serviceinfo.PayloadCodec
+	// note 编解码信息
+	CodecType serviceinfo.PayloadCodec
 }
 
 // NewProtocolInfo creates a new ProtocolInfo using the given tp and ct.
@@ -78,6 +85,7 @@ func NewProtocolInfo(tp transport.Protocol, ct serviceinfo.PayloadCodec) Protoco
 }
 
 // Message is the core abstraction for Kitex message.
+// note Kitex 消息的核心抽象接口
 type Message interface {
 	RPCInfo() rpcinfo.RPCInfo
 	ServiceInfo() *serviceinfo.ServiceInfo
@@ -254,11 +262,13 @@ func (m *message) Recycle() {
 }
 
 // TransInfo contains transport information.
+// note 包含传输信息
 type TransInfo interface {
 	TransStrInfo() map[string]string
+	PutTransStrInfo(kvInfo map[string]string)
+
 	TransIntInfo() map[uint16]string
 	PutTransIntInfo(map[uint16]string)
-	PutTransStrInfo(kvInfo map[string]string)
 	Recycle()
 }
 
@@ -275,6 +285,7 @@ type transInfo struct {
 }
 
 func (ti *transInfo) zero() {
+	// note 可以边遍历、边更新
 	for k := range ti.intInfo {
 		delete(ti.intInfo, k)
 	}
@@ -296,6 +307,7 @@ func (ti *transInfo) PutTransIntInfo(kvInfo map[uint16]string) {
 	if len(ti.intInfo) == 0 {
 		ti.intInfo = kvInfo
 	} else {
+		// note 会覆盖原来的数据
 		for k, v := range kvInfo {
 			ti.intInfo[k] = v
 		}
@@ -322,6 +334,7 @@ func (ti *transInfo) PutTransStrInfo(kvInfo map[string]string) {
 }
 
 // Recycle is used to recycle the transInfo.
+// note 回收 transInfo 信息：删除 所有元素；
 func (ti *transInfo) Recycle() {
 	ti.zero()
 	transInfoPool.Put(ti)

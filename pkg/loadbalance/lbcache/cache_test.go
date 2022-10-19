@@ -41,27 +41,57 @@ func TestBuilder(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	// 获取目标服务的实例
 	ins := discovery.NewInstance("tcp", "127.0.0.1:8888", 10, nil)
-	r := &discovery.SynthesizedResolver{
+
+	var _ discovery.Resolver = (*discovery.SynthesizedResolver)(nil)
+	resolver := &discovery.SynthesizedResolver{
+
+		// func(ctx context.Context, key string) (Result, error)
+		// note 根据对目标端点的描述、获取目标端点的实例列表
 		ResolveFunc: func(ctx context.Context, key string) (discovery.Result, error) {
 			return discovery.Result{Cacheable: true, CacheKey: key, Instances: []discovery.Instance{ins}}, nil
 		},
+
+		// note 返回 target端点信息的描述、该描述应该适合作为缓存的key
 		TargetFunc: func(ctx context.Context, target rpcinfo.EndpointInfo) string {
 			return "mockRoute"
 		},
-		NameFunc: func() string { return t.Name() },
+
+		// func() string
+		NameFunc: func() string {
+			// note 表示返回当前 test case 的名称，即 TestBuilder
+			return t.Name()
+		},
 	}
+
+	// lb 类型：MockLoadbalancer
 	lb := mocksloadbalance.NewMockLoadbalancer(ctrl)
-	lb.EXPECT().GetPicker(gomock.Any()).DoAndReturn(func(res discovery.Result) loadbalance.Picker {
-		test.Assert(t, res.Cacheable)
-		test.Assert(t, res.CacheKey == t.Name()+":mockRoute", res.CacheKey)
-		test.Assert(t, len(res.Instances) == 1)
-		test.Assert(t, res.Instances[0].Address().String() == "127.0.0.1:8888")
-		picker := mocksloadbalance.NewMockPicker(ctrl)
-		return picker
-	}).AnyTimes()
-	lb.EXPECT().Name().Return("Synthesized").AnyTimes()
-	NewBalancerFactory(r, lb, Options{})
+
+	lb.EXPECT().
+		// GetPicker  indicates an expected call of GetPicker
+		// returns a matcher that always matches.
+		GetPicker(gomock.Any()).
+		DoAndReturn(
+			func(res discovery.Result) loadbalance.Picker {
+				test.Assert(t, res.Cacheable)
+				test.Assert(t, res.CacheKey == t.Name()+":mockRoute", res.CacheKey)
+				test.Assert(t, len(res.Instances) == 1)
+				test.Assert(t, res.Instances[0].Address().String() == "127.0.0.1:8888")
+				picker := mocksloadbalance.NewMockPicker(ctrl)
+				return picker
+			}).AnyTimes()
+
+	// returns an object that allows the caller to indicate expected use
+	lb.EXPECT().
+		// indicates an expected call of Name.
+		Name().
+		// declares the values to be returned by the mocked function call.
+		Return("Synthesized").
+		// allows the expectation to be called 0 or more times
+		AnyTimes()
+
+	NewBalancerFactory(resolver, lb, Options{}) // note
 	b, ok := balancerFactories.Load(cacheKey(t.Name(), "Synthesized", defaultOptions))
 	test.Assert(t, ok)
 	test.Assert(t, b != nil)

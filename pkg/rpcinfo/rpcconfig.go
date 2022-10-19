@@ -41,10 +41,10 @@ var (
 
 // Mask bits.
 const (
-	BitRPCTimeout = 1 << iota
-	BitConnectTimeout
-	BitReadWriteTimeout
-	BitIOBufferSize
+	BitRPCTimeout       = 1 << iota // 1
+	BitConnectTimeout               // 10
+	BitReadWriteTimeout             // 100
+	BitIOBufferSize                 // 1000
 )
 
 type InteractionMode int32
@@ -57,13 +57,15 @@ const (
 
 // rpcConfig is a set of configurations used during RPC calls.
 type rpcConfig struct {
-	readOnlyMask      int
+	readOnlyMask int
+	// 对应 client 所有的调用超时
 	rpcTimeout        time.Duration
 	connectTimeout    time.Duration
 	readWriteTimeout  time.Duration
 	ioBufferSize      int
 	transportProtocol transport.Protocol
-	interactionMode   InteractionMode
+	// note 交互模式：双向、单向 和流式
+	interactionMode InteractionMode
 }
 
 func init() {
@@ -87,6 +89,8 @@ func (r *rpcConfig) SetRPCTimeout(to time.Duration) error {
 		r.rpcTimeout = to
 		return nil
 	}
+
+	// 返回error的具体实现
 	return kerrors.ErrNotSupported
 }
 

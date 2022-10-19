@@ -46,17 +46,25 @@ import (
 	"github.com/cloudwego/kitex/pkg/transmeta"
 )
 
-// Server is a abstraction of a RPC server. It accepts connections and dispatches them to the service
-// registered to it.
+// Server is a abstraction of a RPC server.
+// It accepts connections and dispatches them to the service registered to it.
+// note rpc服务的抽象：接受链接并且调度接收到的请求到目标服务
 type Server interface {
+	// note 将服务 和 hander 绑定
 	RegisterService(svcInfo *serviceinfo.ServiceInfo, handler interface{}) error
 	GetServiceInfo() *serviceinfo.ServiceInfo
+
+	// note 启动服务
 	Run() error
+
+	// note 停止服务
 	Stop() error
 }
 
+// NOTE 实现了 server.Service
 type server struct {
-	opt     *internal_server.Options
+	opt *internal_server.Options
+
 	svcInfo *serviceinfo.ServiceInfo
 
 	// actual rpc service implement of biz
@@ -164,13 +172,21 @@ func (s *server) buildInvokeChain() {
 }
 
 // RegisterService should not be called by users directly.
+//		给方法所属的对象注册上 服务信息 和 handle
+// note 不应该由用户直接调用。哪为什么不设置为不可导出
 func (s *server) RegisterService(svcInfo *serviceinfo.ServiceInfo, handler interface{}) error {
+	// note server 只能绑定一个服务信息
 	if s.svcInfo != nil {
 		panic(fmt.Sprintf("Service[%s] is already defined", s.svcInfo.ServiceName))
 	}
+
+	// note 会不会有并发导致数据不一致的问题
 	s.svcInfo = svcInfo
 	s.handler = handler
+
+	// 其实是将<diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(s.svcInfo)> 注册进s.opt.DebugService
 	diagnosis.RegisterProbeFunc(s.opt.DebugService, diagnosis.ServiceInfoKey, diagnosis.WrapAsProbeFunc(s.svcInfo))
+
 	return nil
 }
 

@@ -36,6 +36,7 @@ type MutableEndpointInfo interface {
 }
 
 // MutableRPCConfig is used to change the information in the RPCConfig.
+// note 可修改的rpc配置
 type MutableRPCConfig interface {
 	SetRPCTimeout(to time.Duration) error
 	IsRPCTimeoutLocked() bool

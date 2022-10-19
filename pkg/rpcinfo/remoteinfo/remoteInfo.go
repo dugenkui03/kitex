@@ -30,10 +30,12 @@ import (
 // RemoteInfo implements a rpcinfo.EndpointInfo with mutable address and connection.
 // It is typically used to represent server info on client side or client info on server side.
 type RemoteInfo interface {
+	// note 接口的内嵌接口，也可以说当前接口实现了内嵌接口
 	rpcinfo.EndpointInfo
 	SetServiceName(name string)
 	SetTag(key, value string) error
 
+	// note tag锁是不允许在修改次配置
 	// SetTagLock freezes a key of the tags and refuses further modification on its value.
 	SetTagLock(key string)
 	GetInstance() discovery.Instance

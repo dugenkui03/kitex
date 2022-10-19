@@ -49,11 +49,13 @@ func init() {
 }
 
 // Option is the only way to config a server.
+// 是配置 server 的唯一方式
 type Option struct {
 	F func(o *Options, di *utils.Slice)
 }
 
 // Options is used to initialize the server.
+// note	用来初始化 server
 type Options struct {
 	Svr      *rpcinfo.EndpointBasicInfo
 	Configs  rpcinfo.RPCConfig
@@ -69,6 +71,7 @@ type Options struct {
 
 	// Registry is used for service registry.
 	Registry registry.Registry
+
 	// RegistryInfo is used to in registry.
 	RegistryInfo *registry.Info
 
@@ -83,7 +86,8 @@ type Options struct {
 	SupportedTransportsFunc func(option remote.ServerOption) []string
 
 	// DebugInfo should only contain objects that are suitable for json serialization.
-	DebugInfo    utils.Slice
+	DebugInfo utils.Slice
+
 	DebugService diagnosis.Service
 
 	// Observability

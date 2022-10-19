@@ -22,6 +22,7 @@ import (
 )
 
 // ByteBufferFactory is used to create ByteBuffer.
+// note 从 net.Conn 创建 ByteBuffer 的工厂方法
 type ByteBufferFactory interface {
 	NewByteBuffer(conn net.Conn) (ByteBuffer, error)
 }
@@ -43,13 +44,14 @@ type FrameWrite interface {
 }
 
 // ByteBuffer is the core abstraction of buffer in Kitex.
+// note Kitex 中 缓冲区的核心抽象
 type ByteBuffer interface {
 	io.ReadWriter
 
 	// Next reads the next n bytes sequentially and returns the original buffer.
 	Next(n int) (p []byte, err error)
 
-	// Peek returns the next n bytes without advancing the reader.
+	// Peek returns the next n bytes without advancing(推进) the reader.
 	Peek(n int) (buf []byte, err error)
 
 	// Skip is used to skip the next few bytes quickly. It's faster than Next and doesn't cause release.
@@ -63,9 +65,11 @@ type ByteBuffer interface {
 
 	// ReadableLen returns the total length of readable buffer.
 	// Return: -1 means unreadable.
+	// note 可读取的缓存数量，-1表示不可读取
 	ReadableLen() (n int)
 
 	// ReadLen returns the size already read.
+	// note 已经读取的数据
 	ReadLen() (n int)
 
 	// ReadString is a more efficient way to read string than Next.

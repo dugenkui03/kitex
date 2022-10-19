@@ -23,6 +23,7 @@ import (
 	"github.com/cloudwego/kitex/server"
 )
 
+// note 泛化调用相关
 // NewServer creates a generic server with the given handler and options.
 func NewServer(handler generic.Service, g generic.Generic, opts ...server.Option) server.Server {
 	svcInfo := generic.ServiceInfo(g.PayloadCodecType())
@@ -30,7 +31,12 @@ func NewServer(handler generic.Service, g generic.Generic, opts ...server.Option
 }
 
 // NewServerWithServiceInfo creates a generic server with the given handler, serviceInfo and options.
-func NewServerWithServiceInfo(handler generic.Service, g generic.Generic, svcInfo *serviceinfo.ServiceInfo, opts ...server.Option) server.Server {
+func NewServerWithServiceInfo(
+	handler generic.Service, // note 重点
+	g generic.Generic,
+	svcInfo *serviceinfo.ServiceInfo, // note  重点
+	opts ...server.Option,
+) server.Server {
 	var options []server.Option
 	options = append(options, server.WithGeneric(g))
 	options = append(options, opts...)

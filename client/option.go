@@ -46,6 +46,7 @@ import (
 )
 
 // Option is the only way to config client.
+// Option 和 client.Option 完全等价
 type Option = client.Option
 
 // Options is used to initialize a client.
@@ -124,6 +125,7 @@ func WithDestService(svr string) Option {
 	}}
 }
 
+// note 在服务发现的时候、指定目标实例的地址
 // WithHostPorts specifies the target instance addresses when doing service discovery.
 // It overwrites the results from the Resolver.
 func WithHostPorts(hostports ...string) Option {
@@ -182,6 +184,7 @@ func WithHTTPResolver(r http.Resolver) Option {
 	}}
 }
 
+// 链接类型 - 短链接：
 // WithShortConnection forces kitex to close connection after each call is finished.
 func WithShortConnection() Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
@@ -218,6 +221,7 @@ func WithLogger(logger klog.FormatLogger) Option {
 }
 
 // WithLoadBalancer sets the loadbalancer for client.
+// note 设置负载均衡器
 func WithLoadBalancer(lb loadbalance.Loadbalancer, opts ...*lbcache.Options) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithLoadBalancer(%+v, %+v)", lb, opts))
@@ -229,6 +233,7 @@ func WithLoadBalancer(lb loadbalance.Loadbalancer, opts ...*lbcache.Options) Opt
 }
 
 // WithRPCTimeout specifies the RPC timeout.
+// note 指定 client 所有调用的超时
 func WithRPCTimeout(d time.Duration) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithRPCTimeout(%dms)", d.Milliseconds()))
@@ -253,6 +258,7 @@ func WithConnectTimeout(d time.Duration) Option {
 // will be applied before the other timeout options in this package
 // and those in the callopt package. Thus it can not modify the
 // timeouts set by WithRPCTimeout or WithConnectTimeout.
+// note 动态提供超时配置
 func WithTimeoutProvider(p rpcinfo.TimeoutProvider) Option {
 	return Option{F: func(o *client.Options, di *utils.Slice) {
 		di.Push(fmt.Sprintf("WithTimeoutProvider(%T(%+v))", p, p))

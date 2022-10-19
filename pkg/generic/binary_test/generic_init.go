@@ -42,6 +42,7 @@ var (
 	errResp = "Test Error"
 )
 
+//newGenericClient 初始化 泛化调用client
 func newGenericClient(destService string, g generic.Generic, targetIPPort string) genericclient.Client {
 	var opts []client.Option
 	opts = append(opts, client.WithHostPorts(targetIPPort))

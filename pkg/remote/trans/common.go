@@ -54,8 +54,8 @@ func GetReadTimeout(cfg rpcinfo.RPCConfig) time.Duration {
 
 // GetMethodInfo is used to get method info from serviceinfo.MethodInfo by method name/
 func GetMethodInfo(ri rpcinfo.RPCInfo, svcInfo *serviceinfo.ServiceInfo) (serviceinfo.MethodInfo, error) {
-	methodName := ri.Invocation().MethodName()
-	methodInfo := svcInfo.MethodInfo(methodName)
+	methodName := ri.Invocation().MethodName()   // 获取要调用的方法名称
+	methodInfo := svcInfo.MethodInfo(methodName) // 根据方法名称获取方法的详情信息：MethodInfo
 	if methodInfo != nil {
 		return methodInfo, nil
 	}

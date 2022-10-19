@@ -42,9 +42,21 @@ func ServiceInfo() *serviceinfo.ServiceInfo {
 
 var myServiceServiceInfo = newServiceInfo()
 
+//newServiceInfo 服务包含如下信息：
+//	note
+//		1. 服务名称；
+//		2. 服务方法
+//			2.1 方法名称；
+//			2.2 func(ctx context.Context, handler, args, result interface{})
+//			2.3 参数生成func、结果生成func
 func newServiceInfo() *serviceinfo.ServiceInfo {
 	methods := map[string]serviceinfo.MethodInfo{
-		"mock":          serviceinfo.NewMethodInfo(mockHandler, NewMockArgs, NewMockResult, false),
+		// 方法名称 -> MethodInfo
+		"mock": serviceinfo.NewMethodInfo(
+			mockHandler,                // func(ctx context.Context, handler, args, result interface{}) error
+			NewMockArgs, NewMockResult, //  func() interface{}
+			false,
+		),
 		"mockException": serviceinfo.NewMethodInfo(mockExceptionHandler, NewMockArgs, newMockExceptionResult, false),
 		"mockError":     serviceinfo.NewMethodInfo(mockErrorHandler, NewMockArgs, NewMockResult, false),
 		"mockOneway":    serviceinfo.NewMethodInfo(mockOnewayHandler, NewMockArgs, nil, true),
@@ -128,6 +140,7 @@ type MyService interface {
 	MockOneway(ctx context.Context, req *MyRequest) (err error)
 }
 
+// note 实现了 Read\Write 方法
 type myServiceMockArgs struct {
 	Req *MyRequest `thrift:"req,1" json:"req"`
 }

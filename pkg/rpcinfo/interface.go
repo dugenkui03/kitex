@@ -25,6 +25,7 @@ import (
 	"github.com/cloudwego/kitex/transport"
 )
 
+// note 包含 c/s 某端的信息
 // EndpointInfo contains info for endpoint.
 type EndpointInfo interface {
 	ServiceName() string
@@ -55,6 +56,7 @@ type Event interface {
 }
 
 // Timeouts contains settings of timeouts.
+// note rpc超时、连接超时、读写超时
 type Timeouts interface {
 	RPCTimeout() time.Duration
 	ConnectTimeout() time.Duration
@@ -67,8 +69,13 @@ type TimeoutProvider interface {
 }
 
 // RPCConfig contains configuration for RPC.
+// note 包含 RPC 的配置信息
 type RPCConfig interface {
+	//	RPCTimeout() time.Duration
+	//	ConnectTimeout() time.Duration
+	//	ReadWriteTimeout() time.Duration
 	Timeouts
+
 	IOBufferSize() int
 	TransportProtocol() transport.Protocol
 	InteractionMode() InteractionMode
@@ -83,9 +90,13 @@ type Invocation interface {
 }
 
 // RPCInfo is the core abstraction of information about an RPC in Kitex.
+// note kitex 中 RPC 的核心抽象
 type RPCInfo interface {
+	// 谁发的信息
 	From() EndpointInfo
+	// 谁是接受者
 	To() EndpointInfo
+	// 调用信息：
 	Invocation() Invocation
 	Config() RPCConfig
 	Stats() RPCStats

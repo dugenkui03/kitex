@@ -341,8 +341,10 @@ func (t *svrTransHandler) GracefulShutdown(ctx context.Context) error {
 	}()
 	for {
 		select {
+		// note 接收到数据
 		case <-ctx.Done():
 			return ctx.Err()
+			// note close 的时候会立即走到这里
 		case <-done:
 			return nil
 		}

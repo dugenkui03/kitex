@@ -22,10 +22,14 @@ import (
 	"github.com/cloudwego/kitex/pkg/remote/trans/invoke"
 )
 
+// note 调用信息
 // Message indicates invoke message.
+// note 调用消息
 type Message = invoke.Message
 
+// note Message 的工厂方法
 // NewMessage creates new invoke message.
+// note 使用工厂方法创建一个 Message
 func NewMessage(local, remote net.Addr) Message {
 	return invoke.NewMessage(local, remote)
 }
