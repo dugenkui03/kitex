@@ -27,11 +27,25 @@ import (
 	"github.com/cloudwego/kitex/pkg/klog"
 )
 
+// 线程安全的容器，保存的元素将保存较长时间
 var weightedPickerPool, randomPickerPool sync.Pool
 
 func init() {
+	// note 创建元素的 func
 	weightedPickerPool.New = newWeightedPicker
 	randomPickerPool.New = newRandomPicker
+}
+
+func newWeightedPicker() interface{} {
+	return &weightedPicker{
+		firstIndex: -1,
+	}
+}
+
+func newRandomPicker() interface{} {
+	return &randomPicker{
+		firstIndex: -1,
+	}
 }
 
 type entry = int
@@ -44,12 +58,6 @@ type weightedPicker struct {
 	copiedInstances []discovery.Instance
 	copiedEntries   []entry
 	firstIndex      int
-}
-
-func newWeightedPicker() interface{} {
-	return &weightedPicker{
-		firstIndex: -1,
-	}
 }
 
 // Next implements the Picker interface.
@@ -117,12 +125,6 @@ type randomPicker struct {
 	copiedInstances    []discovery.Instance
 }
 
-func newRandomPicker() interface{} {
-	return &randomPicker{
-		firstIndex: -1,
-	}
-}
-
 // Next implements the Picker interface.
 func (rp *randomPicker) Next(ctx context.Context, request interface{}) (ins discovery.Instance) {
 	if rp.firstIndex < 0 {
@@ -173,8 +175,7 @@ type weightedBalancer struct {
 
 // NewWeightedBalancer creates a loadbalancer using weighted-round-robin algorithm.
 func NewWeightedBalancer() Loadbalancer {
-	lb := &weightedBalancer{}
-	return lb
+	return &weightedBalancer{}
 }
 
 // GetPicker implements the Loadbalancer interface.
